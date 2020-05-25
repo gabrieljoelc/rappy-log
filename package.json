@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "Wraps console log methods so you can set the current log level to only log what you want in the current environment.",
   "main": "index.js",
-  "repository": "rappy-log",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "github:gabrieljoelc/rappy-log",
   "author": "Gabriel Chaney",
   "license": "MIT",
   "private": false,
