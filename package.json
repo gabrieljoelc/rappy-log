@@ -1,6 +1,6 @@
 {
   "name": "rappy-log",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Wraps console log methods so you can set the current log level to only log what you want in the current environment.",
   "main": "index.js",
   "scripts": {
