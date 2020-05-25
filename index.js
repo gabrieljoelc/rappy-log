@@ -1,8 +1,10 @@
-const error = 0;
-const info = 1;
-const debug = 2;
-const trace = 3;
+const none = 0;
+const error = 1;
+const info = 2;
+const debug = 3;
+const trace = 4;
 const levels = {
+  none,
   error,
   info,
   debug,

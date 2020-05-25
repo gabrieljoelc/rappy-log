@@ -1,10 +1,10 @@
 # Rappy Log
 
-Wraps console log methods so you can set the current log level to only log what you want in the current environment.
+Wraps console log methods so you can set the current log level to only log what you want in the current environment. This is useful for debugging in something like React Native.
 
 # Getting started
 
-Install it:
+Add it to your app:
 ```
 yarn add rappy-log
 ```
@@ -12,6 +12,7 @@ yarn add rappy-log
 Usage:
 ```javascript
 const levels = [
+  'none',
   'error',
   'info',
   'debug',
@@ -31,18 +32,19 @@ for (let index = 0; index < levels.length; index++) {
 ```
 Outputs:
 ```
+current level: none
 current level: error
-ERROR - should log 1 time
+ERROR - should log 2 times
 current level: info
-INFO - should log 2 times
-INFO - should log 2 times
+INFO - should log 3 times
+INFO - should log 3 times
 current level: debug
-DEBUG - should log 3 times
-DEBUG - should log 3 times
-DEBUG - should log 3 times
+DEBUG - should log 4 times
+DEBUG - should log 4 times
+DEBUG - should log 4 times
 current level: trace
-TRACE - should log 4 times
-TRACE - should log 4 times
-TRACE - should log 4 times
-TRACE - should log 4 times
+TRACE - should log 5 times
+TRACE - should log 5 times
+TRACE - should log 5 times
+TRACE - should log 5 times
 ```
