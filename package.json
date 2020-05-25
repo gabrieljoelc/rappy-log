@@ -1,0 +1,17 @@
+{
+  "name": "rappy-log",
+  "version": "1.0.0",
+  "description": "Wraps console log methods so you can set the current log level to only log what you want in the current environment.",
+  "main": "index.js",
+  "repository": "rappy-log",
+  "author": "Gabriel Chaney",
+  "license": "MIT",
+  "private": false,
+  "keywords": [
+    "log",
+    "logger",
+    "logging",
+    "trace"
+  ],
+  "homepage": "https://github.com/gabrieljoelc/rappy-log"
+}
