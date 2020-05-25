@@ -1,3 +1,4 @@
+const rap = require('./rap');
 const none = 0;
 const error = 1;
 const info = 2;
@@ -46,6 +47,12 @@ log.trace = (message, ...args) => {
     log.log(message, args);
   }
 }
+log.rap = () => {
+  const bars = rap.freestyle(rap.defaultBars);
+  for (const bar of bars) {
+    log.debug(bar);
+  }
+};
 module.exports = {
   ...log
 };
