@@ -22,7 +22,10 @@ log.getCurrentLevel = () => {
   return Object.keys(levels)[getCurrentLevelInt()];
 };
 log.setLevel = newLevel => {
-  currentLevel = (newLevel || currentLevel || defaultLevel);
+  if (newLevel === null || currentLevel === null) {
+    newLevel = defaultLevel;
+  }
+  currentLevel = newLevel;
 };
 log.log = (message, args) => {
   console.log(`${currentLevel.toUpperCase()} - ${message}`, ...args);

@@ -19,10 +19,9 @@ const levels = [
   'trace',
 ];
 
-for (let index = 0; index < levels.length; index++) {
-  let logCount = index + 1;
+for (let logCount = 0; logCount < levels.length; logCount++) {
   let msg = `should log ${logCount} time${logCount > 1 ? 's' : ''}`;
-  log.setLevel(levels[index]);
+  log.setLevel(levels[logCount]);
   console.log('current level:', log.getCurrentLevel());
   log.error(msg);
   log.info(msg);
@@ -34,17 +33,17 @@ Outputs:
 ```
 current level: none
 current level: error
-ERROR - should log 2 times
+ERROR - should log 1 time
 current level: info
-INFO - should log 3 times
-INFO - should log 3 times
+INFO - should log 2 times
+INFO - should log 2 times
 current level: debug
-DEBUG - should log 4 times
-DEBUG - should log 4 times
-DEBUG - should log 4 times
+DEBUG - should log 3 times
+DEBUG - should log 3 times
+DEBUG - should log 3 times
 current level: trace
-TRACE - should log 5 times
-TRACE - should log 5 times
-TRACE - should log 5 times
-TRACE - should log 5 times
+TRACE - should log 4 times
+TRACE - should log 4 times
+TRACE - should log 4 times
+TRACE - should log 4 times
 ```
