@@ -13,21 +13,29 @@ const defaultMsg = 'Hello World!';
 console.log('=================');
 console.log('test default level');
 console.log('=================');
+console.log('PASS?', log.getCurrentLevel() === 'none');
 console.log('current level:', log.getCurrentLevel());
-log.error(defaultMsg);
-log.info(defaultMsg);
-log.debug(defaultMsg);
-log.trace(defaultMsg);
 
 console.log('\n=================');
 console.log('test falseys for setLevel');
 console.log('=================');
 log.setLevel(undefined);
+console.log('PASS?', log.getCurrentLevel() === 'none');
 console.log('current level:', log.getCurrentLevel());
-log.error(defaultMsg);
-log.info(defaultMsg);
-log.debug(defaultMsg);
-log.trace(defaultMsg);
+
+console.log('\n=================');
+console.log('test invalid for setLevel');
+console.log('=================');
+log.setLevel('foobar');
+console.log('PASS?', log.getCurrentLevel() === 'none');
+console.log('current level:', log.getCurrentLevel());
+
+console.log('\n=================');
+console.log('test uppercase level for setLevel');
+console.log('=================');
+log.setLevel('DEBUG');
+console.log('PASS?', log.getCurrentLevel() === 'debug');
+console.log('current level:', log.getCurrentLevel());
 
 console.log('\n=================');
 console.log('test all levels');

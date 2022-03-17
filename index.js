@@ -23,10 +23,14 @@ log.getCurrentLevel = () => {
   return Object.keys(levels)[getCurrentLevelInt()];
 };
 log.setLevel = newLevel => {
-  if (!newLevel || !currentLevel) {
-    newLevel = defaultLevel;
+  let level = newLevel || process?.env?.LOG_LEVEL;
+  const possibleDefault = currentLevel || defaultLevel;
+  if (level) level = level.toLowerCase();
+  if (!level || Object.keys(levels).includes(level) == false) {
+    console.warn(`The specified level ${level} is not valid. Defaulting to ${possibleDefault}.`);
+    level = possibleDefault;
   }
-  currentLevel = newLevel;
+  currentLevel = level;
 };
 log.log = (message, args) => {
   console.log(`${currentLevel.toUpperCase()} - ${message}`, ...args);
