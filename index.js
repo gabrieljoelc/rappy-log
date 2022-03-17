@@ -1,4 +1,5 @@
 const rap = require('./rap');
+
 const none = 0;
 const error = 1;
 const info = 2;
@@ -22,7 +23,7 @@ log.getCurrentLevel = () => {
   return Object.keys(levels)[getCurrentLevelInt()];
 };
 log.setLevel = newLevel => {
-  if (newLevel === null || currentLevel === null) {
+  if (!newLevel || !currentLevel) {
     newLevel = defaultLevel;
   }
   currentLevel = newLevel;
