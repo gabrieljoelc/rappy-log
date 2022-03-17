@@ -16,5 +16,8 @@
     "logging",
     "trace"
   ],
-  "homepage": "https://github.com/gabrieljoelc/rappy-log"
+  "homepage": "https://github.com/gabrieljoelc/rappy-log",
+  "engines" : {
+    "node" : ">=14.0.0"
+  }
 }
