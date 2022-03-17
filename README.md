@@ -11,6 +11,8 @@ yarn add rappy-log
 
 Usage:
 ```javascript
+const log = require('rappy-log');
+
 const levels = [
   'none',
   'error',
@@ -46,4 +48,26 @@ TRACE - should log 4 times
 TRACE - should log 4 times
 TRACE - should log 4 times
 TRACE - should log 4 times
+```
+
+## Environment variable
+
+You can also set the log level with an environment variable (see (12-factor)[https://12factor.net/config] for more information).
+
+If you had this app:
+```js
+# app.js
+const log = require('rappy-log');
+
+log.setLevel(); // if no level parameter is passed, tries to get level from environment
+
+// dope freestyling starts to drop
+log.error('And money on the wood');
+log.debug('We made a promise and it\'s understood');
+```
+
+Now start the app:
+```zsh
+LOG_LEVEL=error node app.js
+> And money on the wood
 ```
