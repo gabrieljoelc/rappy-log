@@ -8,7 +8,8 @@ const levels = {
   trace: 4,
 };
 
-let currentLevel = levels[process?.env?.LOG_LEVEL?.toLowerCase()] || levels.none;
+const isNode = typeof process !== 'undefined' && process.env;
+let currentLevel = levels[isNode ? process.env.LOG_LEVEL?.toLowerCase() : 'none'] || levels.none;
 
 export function setLogLevel(level) {
   if (typeof level === 'string' && levels[level.toLowerCase()] !== undefined) {
