@@ -53,8 +53,8 @@ jobs:
             echo "No version change detected for GitHub Packages. Skipping publish."
             echo "publish_github=false" >> $GITHUB_ENV
           fi
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish to GitHub Packages
         if: env.publish_github == 'true'
         run: npm publish
