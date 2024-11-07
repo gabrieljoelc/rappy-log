@@ -1,10 +1,15 @@
 {
   "name": "rappy-log",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Wraps console log methods so you can set the current log level to only log what you want in the current environment.",
   "main": "index.js",
+  "type": "module",
+  "exports": {
+    "import": "./index.js",
+    "require": "./index.js"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test.js"
   },
   "repository": "github:gabrieljoelc/rappy-log",
   "author": "Gabriel Chaney",

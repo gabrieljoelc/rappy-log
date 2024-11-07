@@ -1,66 +1,57 @@
-const rap = require('./rap');
+import { freestyle, defaultBars } from './rap.js';
 
-const none = 0;
-const error = 1;
-const info = 2;
-const debug = 3;
-const trace = 4;
 const levels = {
-  none,
-  error,
-  info,
-  debug,
-  trace,
+  none: 0,
+  error: 1,
+  info: 2,
+  debug: 3,
+  trace: 4,
 };
-const defaultLevel = Object.getOwnPropertyNames(levels)[0];
-let currentLevel = defaultLevel;
-function getCurrentLevelInt() {
-  return levels[currentLevel];
+
+let currentLevel = levels[process.env.LOG_LEVEL?.toLowerCase()] || levels.none;
+
+export function setLogLevel(level) {
+  if (typeof level === 'string' && levels[level.toLowerCase()] !== undefined) {
+    currentLevel = levels[level.toLowerCase()];
+  } else {
+    console.warn(`Invalid log level "${level}", defaulting to "${Object.keys(levels)[currentLevel]}"`);
+  }
 }
 
-const log = { };
-log.getCurrentLevel = () => {
-  return Object.keys(levels)[getCurrentLevelInt()];
+export function getCurrentLogLevel() {
+  return Object.keys(levels).find(key => levels[key] === currentLevel);
+}
+
+const originalConsole = { ...console };
+
+console.info = (message, ...args) => {
+  if (currentLevel >= levels.info) originalConsole.log(`INFO - ${message}`, ...args);
 };
-log.setLevel = newLevel => {
-  let level = newLevel || process?.env?.LOG_LEVEL;
-  const possibleDefault = currentLevel || defaultLevel;
-  if (level) level = level.toLowerCase();
-  if (!level || Object.keys(levels).includes(level) == false) {
-    console.warn(`The specified level ${level} is not valid. Defaulting to ${possibleDefault}.`);
-    level = possibleDefault;
-  }
-  currentLevel = level;
+console.error = (message, ...args) => {
+  if (currentLevel >= levels.error) originalConsole.error(`ERROR - ${message}`, ...args);
 };
-log.log = (message, args) => {
-  console.log(`${currentLevel.toUpperCase()} - ${message}`, ...args);
-}
-log.error = (message, ...args) => {
-  if (getCurrentLevelInt() >= error) {
-    console.error(`${currentLevel.toUpperCase()} - ${message}`, ...args);
-  }
-}
-log.info = (message, ...args) => {
-  if (getCurrentLevelInt() >= info) {
-    log.log(message, args);
-  }
-}
-log.debug = (message, ...args) => {
-  if (getCurrentLevelInt() >= debug) {
-    log.log(message, args);
-  }
-}
-log.trace = (message, ...args) => {
-  if (getCurrentLevelInt() >= trace) {
-    log.log(message, args);
-  }
-}
-log.rap = () => {
-  const bars = rap.freestyle(rap.defaultBars);
+console.debug = (message, ...args) => {
+  if (currentLevel >= levels.debug) originalConsole.debug(`DEBUG - ${message}`, ...args);
+};
+console.trace = (message, ...args) => {
+  if (currentLevel >= levels.trace) originalConsole.trace(`TRACE - ${message}`, ...args);
+};
+
+console.rap = () => {
+  const bars = freestyle(defaultBars);
   for (const bar of bars) {
-    log.debug(bar);
+    console.debug(bar);
   }
 };
-module.exports = {
-  ...log
-};
+
+// Export for ESM environments
+export { levels };
+
+// CommonJS compatibility check
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    setLogLevel,
+    getCurrentLogLevel,
+    levels,
+  };
+}
