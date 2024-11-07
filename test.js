@@ -1,4 +1,4 @@
-const log = require('./index');
+import { getCurrentLogLevel, setLogLevel } from './index.js';
 
 const levels = [
   'none',
@@ -8,45 +8,67 @@ const levels = [
   'trace',
 ];
 
-const defaultMsg = 'Hello World!';
+let hasFailures = false;
 
-console.log('=================');
-console.log('test default level');
-console.log('=================');
-console.log('PASS?', log.getCurrentLevel() === 'none');
-console.log('current level:', log.getCurrentLevel());
+// Basic assertion function to display clear pass/fail messages
+function assert(condition, message) {
+  if (condition) {
+    console.log(`✅ PASS: ${message}`);
+  } else {
+    console.error(`❌ FAIL: ${message}`);
+    hasFailures = true; // Mark that there was a failure
+  }
+}
 
-console.log('\n=================');
-console.log('test falseys for setLevel');
-console.log('=================');
-log.setLevel(undefined);
-console.log('PASS?', log.getCurrentLevel() === 'none');
-console.log('current level:', log.getCurrentLevel());
+// Helper to print a section header
+function printSectionHeader(title) {
+  console.log(`\n=== ${title.toUpperCase()} ===`);
+}
 
-console.log('\n=================');
-console.log('test invalid for setLevel');
-console.log('=================');
-log.setLevel('foobar');
-console.log('PASS?', log.getCurrentLevel() === 'none');
-console.log('current level:', log.getCurrentLevel());
+printSectionHeader('Test default level');
+assert(getCurrentLogLevel() === 'none', 'Default log level should be "none"');
+console.log(`Current level: ${getCurrentLogLevel()}`);
 
-console.log('\n=================');
-console.log('test uppercase level for setLevel');
-console.log('=================');
-log.setLevel('DEBUG');
-console.log('PASS?', log.getCurrentLevel() === 'debug');
-console.log('current level:', log.getCurrentLevel());
+printSectionHeader('Test falsey values for setLogLevel');
+setLogLevel(undefined);
+assert(getCurrentLogLevel() === 'none', 'Setting log level to undefined should retain "none" level');
+console.log(`Current level: ${getCurrentLogLevel()}`);
 
-console.log('\n=================');
-console.log('test all levels');
-console.log('=================');
+printSectionHeader('Test invalid value for setLogLevel');
+setLogLevel('foobar');
+assert(getCurrentLogLevel() === 'none', 'Setting log level to invalid value should retain "none" level');
+console.log(`Current level: ${getCurrentLogLevel()}`);
 
-for (let logCount = 0; logCount < levels.length; logCount++) {
-  let msg = `should log ${logCount} time${logCount > 1 ? 's' : ''}`;
-  log.setLevel(levels[logCount]);
-  console.log('current level:', log.getCurrentLevel());
-  log.error(msg);
-  log.info(msg);
-  log.debug(msg);
-  log.trace(msg);
+printSectionHeader('Test uppercase input for setLogLevel');
+setLogLevel('DEBUG');
+assert(getCurrentLogLevel() === 'debug', 'Setting log level to "DEBUG" (uppercase) should set to "debug"');
+console.log(`Current level: ${getCurrentLogLevel()}`);
+
+printSectionHeader('Test each level logging');
+for (let i = 0; i < levels.length; i++) {
+  const level = levels[i];
+  const msg = `should log ${i} time${i === 1 ? '' : 's'}`;
+  setLogLevel(level);
+  console.log(`\nCurrent level: "${getCurrentLogLevel()}"`);
+
+  // Log messages based on level
+  console.error(`ERROR: ${msg}`); // Should log at "error" and above
+  console.info(`INFO: ${msg}`);   // Should log at "info" and above
+  console.debug(`DEBUG: ${msg}`);  // Should log at "debug" and above
+  console.trace(`TRACE: ${msg}`);  // Should log at "trace" level only
+
+  // Assert that getCurrentLogLevel matches the set level
+  assert(getCurrentLogLevel() === level, `Current level should be "${level}"`);
+}
+
+// Summary of test results
+console.log('\n===================');
+console.log('TEST SUMMARY');
+console.log('===================');
+
+if (hasFailures) {
+  console.error('❌ Some tests failed.');
+  process.exit(1);
+} else {
+  console.log('✅ All tests passed.');
 }

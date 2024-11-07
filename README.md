@@ -6,12 +6,12 @@ Wraps console log methods so you can set the current log level to only log what 
 
 Add it to your app:
 ```
-yarn add rappy-log
+npm install rappy-log
 ```
 
 Usage:
 ```javascript
-const log = require('rappy-log');
+import { getCurrentLogLevel, setLogLevel } from 'rappy-log';
 
 const levels = [
   'none',
@@ -23,12 +23,12 @@ const levels = [
 
 for (let logCount = 0; logCount < levels.length; logCount++) {
   let msg = `should log ${logCount} time${logCount > 1 ? 's' : ''}`;
-  log.setLevel(levels[logCount]);
-  console.log('current level:', log.getCurrentLevel());
-  log.error(msg);
-  log.info(msg);
-  log.debug(msg);
-  log.trace(msg);
+  setLogLevel(levels[logCount]);
+  console.log('current level:', getCurrentLogLevel());
+  console.error(msg);
+  console.info(msg);
+  console.debug(msg);
+  console.trace(msg);
 }
 ```
 Outputs:
@@ -57,13 +57,13 @@ You can also set the log level with an environment variable (see (12-factor)[htt
 If you had this app:
 ```js
 # app.js
-const log = require('rappy-log');
+import { setLogLevel } from 'rappy-log';
 
-log.setLevel(); // if no level parameter is passed, tries to get level from environment
+setLogLevel(); // if no level parameter is passed, tries to get level from environment
 
 // dope freestyling starts to drop
-log.error('And money on the wood');
-log.debug('We made a promise and it\'s understood');
+console.error('And money on the wood');
+console.debug('We made a promise and it\'s understood');
 ```
 
 Now start the app:
