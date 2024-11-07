@@ -44,6 +44,8 @@ jobs:
         run: |
           LAST_GITHUB_VERSION=$(npm show @${{ github.repository_owner }}/rappy-log version 2>/dev/null || echo "0.0.0")
           CURRENT_VERSION=$(jq -r '.version' package.json)
+          echo "Current version in package.json: $CURRENT_VERSION"
+          echo "Last published version on GitHub Packages: $LAST_GITHUB_VERSION"
           if [ "$CURRENT_VERSION" != "$LAST_GITHUB_VERSION" ]; then
             echo "New version detected for GitHub Packages. Proceeding with publish."
             echo "publish_github=true" >> $GITHUB_ENV
@@ -51,6 +53,8 @@ jobs:
             echo "No version change detected for GitHub Packages. Skipping publish."
             echo "publish_github=false" >> $GITHUB_ENV
           fi
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish to GitHub Packages
         if: env.publish_github == 'true'
         run: npm publish
