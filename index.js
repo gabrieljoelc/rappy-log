@@ -3,30 +3,35 @@ import { freestyle, defaultBars } from './rap.js';
 /**
  * Default levels and logging methods.
  */
-const defaultLevels = {
+const defaultLevels = Object.freeze({
   none: 0,
   error: 1,
   warn: 2,
   info: 3,
   debug: 4,
   trace: 5,
-};
+});
 
 const originalConsole = { ...console };
-let logMethods = createDefaultLogMethods(defaultLevels);
+const defaultLoggers = createDefaultLogMethods(defaultLevels);
+let logMethods = { ...defaultLoggers };
 let levels = { ...defaultLevels };
-
 let currentLevel = detectLogLevel();
 
-/**
- * Detects the log level from the environment variable if running in Node.js.
- * Defaults to "none" if not set.
- */
-function detectLogLevel() {
-  const isNode = typeof process !== 'undefined' && process.env;
-  const envLevel = isNode ? process.env.LOG_LEVEL?.toLowerCase() : 'none';
-  return levels[envLevel] !== undefined ? levels[envLevel] : levels.none;
+// Export for ESM environments
+export { defaultLoggers, levels };
+
+// CommonJS compatibility check
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    defaultLoggers,
+    getCurrentLogLevel,
+    levels,
+    setLogLevel,
+    setLoggers,
+  };
 }
+
 
 /**
  * Sets the log level.
@@ -78,6 +83,16 @@ export function setLoggers(customLoggers) {
   levels = { ...customLevels };
   logMethods = createLogMethods(customLoggers);
   currentLevel = detectLogLevel(); // Reset log level after updating methods
+}
+
+/**
+ * Detects the log level from the environment variable if running in Node.js.
+ * Defaults to "none" if not set.
+ */
+function detectLogLevel() {
+  const isNode = typeof process !== 'undefined' && process.env;
+  const envLevel = isNode ? process.env.LOG_LEVEL?.toLowerCase() : 'none';
+  return levels[envLevel] !== undefined ? levels[envLevel] : levels.none;
 }
 
 /**
@@ -134,19 +149,3 @@ console.rap = () => {
     console.debug(bar);
   }
 };
-
-// Initialize default loggers on load
-logMethods = createDefaultLogMethods(defaultLevels);
-
-// Export for ESM environments
-export { levels };
-
-// CommonJS compatibility check
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {
-    setLogLevel,
-    getCurrentLogLevel,
-    setLoggers,
-    levels,
-  };
-}

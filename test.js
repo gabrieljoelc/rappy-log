@@ -1,4 +1,4 @@
-import { getCurrentLogLevel, setLogLevel, setLoggers } from './index.js';
+import { defaultLoggers, getCurrentLogLevel, setLogLevel, setLoggers } from './index.js';
 
 const levels = [
   'none',
@@ -114,6 +114,25 @@ for (let i = 0; i < customLevels.length; i++) {
 console.log('\n===================');
 console.log('TEST SUMMARY');
 console.log('===================');
+
+setLoggers(defaultLoggers);
+
+printSectionHeader('Test each level logging');
+for (let i = 0; i < levels.length; i++) {
+  const level = levels[i];
+  const msg = `should log ${i} time${i === 1 ? '' : 's'}`;
+  setLogLevel(level);
+  console.log(`\nCurrent level: "${getCurrentLogLevel()}"`);
+
+  // Log messages based on level
+  console.error(`ERROR: ${msg}`); // Should log at "error" and above
+  console.info(`INFO: ${msg}`);   // Should log at "info" and above
+  console.debug(`DEBUG: ${msg}`);  // Should log at "debug" and above
+  console.trace(`TRACE: ${msg}`);  // Should log at "trace" level only
+
+  // Assert that getCurrentLogLevel matches the set level
+  assert(getCurrentLogLevel() === level, `Current level should be "${level}"`);
+}
 
 if (hasFailures) {
   console.error('❌ Some tests failed.');
