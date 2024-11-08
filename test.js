@@ -1,4 +1,4 @@
-import { getCurrentLogLevel, setLogLevel } from './index.js';
+import { getCurrentLogLevel, setLogLevel, setLoggers } from './index.js';
 
 const levels = [
   'none',
@@ -59,6 +59,55 @@ for (let i = 0; i < levels.length; i++) {
 
   // Assert that getCurrentLogLevel matches the set level
   assert(getCurrentLogLevel() === level, `Current level should be "${level}"`);
+}
+
+// Define custom loggers mimicking Chrome behavior
+const customLoggers = [
+  function none(...args) { console.log('[NONE]', ...args); },
+  function error(...args) { console.error('[ERROR]', ...args); },
+  function warn(...args) { console.warn('[WARN]', ...args); },
+  function info(...args) { console.info('[INFO]', ...args); },
+  function debug(...args) { console.debug('[DEBUG]', ...args); },
+  function trace(...args) { console.debug('[TRACE-DEBUG-KICK-IT-CHROME]', ...args); },
+];
+
+// Set custom loggers and run tests
+printSectionHeader('Test custom loggers setup');
+setLoggers(customLoggers);
+
+assert(getCurrentLogLevel() === 'none', 'Default log level should be "none" after setting custom loggers');
+console.log(`Current level: ${getCurrentLogLevel()}`);
+
+// Test invalid and falsy values
+printSectionHeader('Test invalid log level');
+setLogLevel('foobar');
+assert(getCurrentLogLevel() === 'none', 'Invalid log level should retain "none" level');
+console.log(`Current level after invalid input: ${getCurrentLogLevel()}`);
+
+printSectionHeader('Test falsey value for setLogLevel');
+setLogLevel(undefined);
+assert(getCurrentLogLevel() === 'none', 'Setting log level to undefined should retain "none" level');
+console.log(`Current level after falsey input: ${getCurrentLogLevel()}`);
+
+// Test setting each level with custom loggers
+const customLevels = ['none', 'error', 'warn', 'info', 'debug', 'trace'];
+
+for (let i = 0; i < customLevels.length; i++) {
+  const level = customLevels[i];
+  const msg = `should log at level "${level}"`;
+
+  printSectionHeader(`Set log level to "${level}"`);
+  setLogLevel(level);
+  assert(getCurrentLogLevel() === level, `Log level should be set to "${level}"`);
+
+  // Log messages based on level
+  console.error(`[ERROR] ${msg}`); // Should log at "error" and above
+  console.warn(`[WARN] ${msg}`);   // Should log at "warn" and above
+  console.info(`[INFO] ${msg}`);   // Should log at "info" and above
+  console.trace(`[TRACE] ${msg}`); // Should log at "trace" level and above
+  console.debug(`[DEBUG] ${msg}`); // Should log at "debug" level only
+
+  console.log(`\nCurrent level: "${getCurrentLogLevel()}"`);
 }
 
 // Summary of test results
