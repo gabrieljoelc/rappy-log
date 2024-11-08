@@ -1,22 +1,18 @@
 import { freestyle, defaultBars } from './rap.js';
 
-/**
- * Default levels and logging methods.
- */
-const defaultLevels = Object.freeze({
-  none: 0,
-  error: 1,
-  warn: 2,
-  info: 3,
-  debug: 4,
-  trace: 5,
-});
-
+let currentLevel = 0;
 const originalConsole = { ...console };
-const defaultLoggers = createDefaultLogMethods(defaultLevels);
-let logMethods = { ...defaultLoggers };
-let levels = { ...defaultLevels };
-let currentLevel = detectLogLevel();
+const defaultLoggers = [
+  function none(...args) { originalConsole.log(...args); },
+  function error(...args) { if (currentLevel >= levels.error) originalConsole.error(`ERROR -`, ...args); },
+  function warn(...args) { if (currentLevel >= levels.warn) originalConsole.warn(`WARN -`, ...args); },
+  function info(...args) { if (currentLevel >= levels.info) originalConsole.info(`INFO -`, ...args); },
+  function debug(...args) { if (currentLevel >= levels.debug) originalConsole.debug(`DEBUG -`, ...args); },
+  function trace(...args) { if (currentLevel >= levels.trace) originalConsole.trace(`TRACE -`, ...args); },
+];
+let logMethods = [];
+let levels = {};
+setLoggers(defaultLoggers);
 
 // Export for ESM environments
 export { defaultLoggers, levels };
@@ -67,22 +63,24 @@ export function getCurrentLogLevel() {
 
 /**
  * Allows the user to set custom loggers.
- * @param {Array} customLoggers - An array of custom logging functions.
+ * @param {Array} loggerArray - An array of named logging functions.
  */
-export function setLoggers(customLoggers) {
-  const customLevels = customLoggers.reduce((acc, method, index) => {
-    if (typeof method === 'function' && method.name) {
-      acc[method.name.toLowerCase()] = index;
-    } else {
-      throw new Error('All logging methods must be named functions');
-    }
-    return acc;
-  }, {});
-
-  // Update levels and log methods based on custom loggers
-  levels = { ...customLevels };
-  logMethods = createLogMethods(customLoggers);
-  currentLevel = detectLogLevel(); // Reset log level after updating methods
+export function setLoggers(loggerArray) {
+  if (!loggerArray) {
+    throw new Error('Expected an array of logging functions');
+  }
+  if (!Array.isArray(loggerArray)) {
+    throw new TypeError('Expected an array of logging functions');
+  }
+  if (!loggerArray.every((method) => typeof method === 'function')) {
+    throw new TypeError('All elements in the logger array must be functions');
+  }
+  if (!loggerArray.every((method) => method.name)) {
+    throw new Error('All functions in the logger array must be named');
+  }
+  logMethods = createLogMethods(loggerArray);
+  levels = generateLevels(loggerArray);
+  currentLevel = detectLogLevel();
 }
 
 /**
@@ -96,29 +94,15 @@ function detectLogLevel() {
 }
 
 /**
- * Creates the default log methods based on predefined levels.
- * @param {Object} levels - An object defining log levels.
- * @returns {Object} Log methods respecting the current level.
+ * Generate levels from the logger functions array.
+ * @param {Array} loggerArray - An array of named logging functions.
+ * @returns {Object} - An object mapping function names to levels.
  */
-function createDefaultLogMethods(levels) {
-  return {
-    none: (message, ...args) => originalConsole.log(message, ...args),
-    error: (message, ...args) => {
-      if (currentLevel >= levels.error) originalConsole.error(`ERROR - ${message}`, ...args);
-    },
-    warn: (message, ...args) => {
-      if (currentLevel >= levels.warn) originalConsole.warn(`WARN - ${message}`, ...args);
-    },
-    info: (message, ...args) => {
-      if (currentLevel >= levels.info) originalConsole.info(`INFO - ${message}`, ...args);
-    },
-    debug: (message, ...args) => {
-      if (currentLevel >= levels.debug) originalConsole.debug(`DEBUG - ${message}`, ...args);
-    },
-    trace: (message, ...args) => {
-      if (currentLevel >= levels.trace) originalConsole.trace(`TRACE - ${message}`, ...args);
-    },
-  };
+function generateLevels(loggerArray) {
+  return loggerArray.reduce((acc, method, index) => {
+    acc[method.name.toLowerCase()] = index;
+    return acc;
+  }, {});
 }
 
 /**
