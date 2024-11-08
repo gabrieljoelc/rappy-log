@@ -8,6 +8,7 @@ let hasFailures = false;
 // Custom Loggers Mimicking Chrome Behavior
 const customLoggers = [
   function none(...args) { console.log('[NONE]', ...args); },
+  function critical(...args) { console.error('[CRITICAL]', ...args); },
   function error(...args) { console.error('[ERROR]', ...args); },
   function warn(...args) { console.warn('[WARN]', ...args); },
   function info(...args) { console.info('[INFO]', ...args); },
@@ -15,24 +16,29 @@ const customLoggers = [
   function trace(...args) { console.debug('[TRACE-DEBUG-KICK-IT-CHROME]', ...args); },
 ];
 
-runTests(customLoggers);
+runTests();
 
 // Run Tests
-function runTests(customLoggers) {
-  printSectionHeader('RUNNING TEST SUITE');
-  testDefaultLevels();
-  testCustomLoggers(customLoggers);
-  resetToDefaultLoggers();
+function runTests() {
+  try {
+    printSectionHeader('RUNNING TEST SUITE');
+    testDefaultLevels();
+    testCustomLoggers();
+    resetToDefaultLoggers();
 
-  // Test Summary
-  console.log('\n===================');
-  console.log('TEST SUMMARY');
-  console.log('===================');
-  if (hasFailures) {
-    console.error('❌ Some tests failed.');
+    // Test Summary
+    console.log('\n===================');
+    console.log('TEST SUMMARY');
+    console.log('===================');
+    if (hasFailures) {
+      console.error('❌ Some tests failed.');
+      process.exit(1);
+    } else {
+      console.log('✅ All tests passed.');
+    }
+  } catch (error) {
+    console.error('❌ A fatal error occurred during testing:', error);
     process.exit(1);
-  } else {
-    console.log('✅ All tests passed.');
   }
 }
 
@@ -41,7 +47,7 @@ function assert(condition, message) {
   if (condition) {
     console.log(`✅ PASS: ${message}`);
   } else {
-    console.error(`❌ FAIL: ${message}`);
+    console.log(`❌ FAIL: ${message}`);
     hasFailures = true;
   }
 }
@@ -83,7 +89,7 @@ function testDefaultLevels() {
 }
 
 // Test Custom Loggers
-function testCustomLoggers(customLoggers) {
+function testCustomLoggers() {
   printSectionHeader('Custom Loggers Setup');
   setLoggers(customLoggers);
 
